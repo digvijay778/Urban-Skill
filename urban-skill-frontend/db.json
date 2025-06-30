@@ -1,0 +1,31 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Doe",
+      "name": "John Doe",
+      "email": "customer@test.com",
+      "password": "password123",
+      "phone": "+919876543210",
+      "role": "customer",
+      "isVerified": true,
+      "createdAt": "2025-06-26T18:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "name": "Jane Smith",
+      "email": "worker@test.com",
+      "password": "password123",
+      "phone": "+919876543211",
+      "role": "worker",
+      "isVerified": true,
+      "createdAt": "2025-06-26T18:30:00.000Z"
+    }
+  ],
+  "services": [],
+  "bookings": [],
+  "paymentMethods": []
+}
