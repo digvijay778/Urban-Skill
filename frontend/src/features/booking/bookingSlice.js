@@ -60,8 +60,11 @@ const bookingSlice = createSlice({
       })
       .addCase(fetchBookings.fulfilled, (state, action) => {
         state.loading = false;
+        console.log('Bookings fetched:', action.payload);
         // Backend returns {bookings: [], pagination: {}}
-        state.bookings = action.payload?.bookings || action.payload || [];
+        const bookingsData = action.payload?.bookings || action.payload || [];
+        console.log('Processed bookings:', bookingsData);
+        state.bookings = Array.isArray(bookingsData) ? bookingsData : [];
       })
       .addCase(fetchBookings.rejected, (state, action) => {
         state.loading = false;

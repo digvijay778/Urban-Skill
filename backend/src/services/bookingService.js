@@ -87,7 +87,7 @@ const updateBookingStatus = async (bookingId, newStatus) => {
     bookingId,
     { status: newStatus },
     { new: true, runValidators: true }
-  );
+  ).populate(['customerId', 'workerId', 'serviceCategory']);
 
   if (!booking) {
     throw new ApiError(404, RESPONSE_MESSAGES.BOOKING_NOT_FOUND);

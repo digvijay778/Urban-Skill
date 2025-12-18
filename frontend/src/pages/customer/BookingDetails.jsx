@@ -15,6 +15,10 @@ const BookingDetails = () => {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [review, setReview] = useState({ rating: 5, comment: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [existingReview, setExistingReview] = useState(null);
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -22,6 +26,16 @@ const BookingDetails = () => {
         setLoading(true);
         const response = await api.get(`/bookings/${id}`);
         setBooking(response.data.data);
+        
+        // Check if review exists
+        try {
+          const reviewRes = await api.get(`/reviews/booking/${id}`);
+          if (reviewRes.data.data) {
+            setExistingReview(reviewRes.data.data);
+          }
+        } catch (err) {
+          // No review exists, which is fine
+        }
       } catch (error) {
         console.error('Failed to fetch booking:', error);
         toast.error('Failed to load booking details');
@@ -55,6 +69,27 @@ const BookingDetails = () => {
     }
   };
 
+  const handleSubmitReview = async () => {
+    if (!review.comment.trim()) {
+      toast.error('Please write a review comment');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      const response = await api.post(`/reviews/${id}`, review);
+      toast.success('Review submitted successfully!');
+      setExistingReview(response.data.data);
+      setShowReviewModal(false);
+      setReview({ rating: 5, comment: '' });
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+      toast.error(error.response?.data?.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   if (loading) {
     return <Loader fullScreen text="Loading booking details..." />;
   }
@@ -72,6 +107,7 @@ const BookingDetails = () => {
 
   const statusColor = BOOKING_STATUS_COLORS[booking.status] || 'bg-gray-100 text-gray-800';
   const canCancel = ['PENDING', 'ACCEPTED'].includes(booking.status);
+  const canReview = booking.status === 'COMPLETED' && !existingReview;
 
   const workerName = booking.workerId?.firstName
     ? `${booking.workerId.firstName} ${booking.workerId.lastName}`
@@ -215,22 +251,131 @@ const BookingDetails = () => {
         </div>
 
         {/* Actions */}
-        {canCancel && (
+        {(canCancel || canReview) && (
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Actions</h2>
-            <button
-              onClick={handleCancelBooking}
-              disabled={cancelling}
-              className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {cancelling ? 'Cancelling...' : 'Cancel Booking'}
-            </button>
-            <p className="text-sm text-gray-500 mt-2 text-center">
-              You can cancel this booking before it starts
-            </p>
+            {canCancel && (
+              <>
+                <button
+                  onClick={handleCancelBooking}
+                  disabled={cancelling}
+                  className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {cancelling ? 'Cancelling...' : 'Cancel Booking'}
+                </button>
+                <p className="text-sm text-gray-500 mt-2 text-center">
+                  You can cancel this booking before it starts
+                </p>
+              </>
+            )}
+            {canReview && (
+              <>
+                <button
+                  onClick={() => setShowReviewModal(true)}
+                  className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+                >
+                  Leave a Review
+                </button>
+                <p className="text-sm text-gray-500 mt-2 text-center">
+                  Share your experience with this worker
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Review Display */}
+        {existingReview && (
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Your Review</h2>
+            <div className="flex items-center mb-3">
+              {[...Array(5)].map((_, index) => (
+                <svg
+                  key={index}
+                  className={`w-6 h-6 ${
+                    index < existingReview.rating ? 'text-yellow-400' : 'text-gray-300'
+                  }`}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+              <span className="ml-2 text-gray-600 text-sm">
+                {formatDate(existingReview.createdAt)}
+              </span>
+            </div>
+            <p className="text-gray-700 leading-relaxed">{existingReview.comment}</p>
           </div>
         )}
       </div>
+
+      {/* Review Modal */}
+      {showReviewModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Leave a Review</h3>
+            
+            {/* Rating */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rating
+              </label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setReview({ ...review, rating: star })}
+                    className="focus:outline-none"
+                  >
+                    <svg
+                      className={`w-8 h-8 ${
+                        star <= review.rating ? 'text-yellow-400' : 'text-gray-300'
+                      } hover:text-yellow-400 transition-colors`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Comment */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your Review
+              </label>
+              <textarea
+                value={review.comment}
+                onChange={(e) => setReview({ ...review, comment: e.target.value })}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="Share your experience with this worker..."
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitReview}
+                disabled={submittingReview}
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submittingReview ? 'Submitting...' : 'Submit Review'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
