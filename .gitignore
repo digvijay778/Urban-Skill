@@ -24,3 +24,11 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Documentation files (keep local only)
+CUSTOMER_REVIEW_PROMPTS.md
+MONGODB_IP_FIX.md
+PROJECT_OVERVIEW.md
+QUICK_START.md
+RAZORPAY_INTEGRATION.md
+REVIEWS_EARNINGS_FEATURES.md
