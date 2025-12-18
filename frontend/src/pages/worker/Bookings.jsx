@@ -12,14 +12,14 @@ const Bookings = () => {
 
   useEffect(() => {
     // Initial fetch
-    dispatch(fetchBookings()).then(() => {
+    dispatch(fetchBookings()).finally(() => {
       setInitialLoad(false);
     });
 
-    // Set up polling to refresh bookings every 5 seconds for real-time updates
+    // Set up polling to refresh bookings every 30 seconds (reduced from 5s to avoid rate limiting)
     intervalRef.current = setInterval(() => {
       dispatch(fetchBookings());
-    }, 5000);
+    }, 30000);
 
     // Cleanup on unmount
     return () => {
@@ -28,6 +28,9 @@ const Bookings = () => {
       }
     };
   }, [dispatch]);
+
+  // Debug logging
+  console.log('Worker Bookings - State:', { bookings, loading, initialLoad, bookingsLength: bookings?.length });
 
   if (loading && initialLoad) {
     return <Loader text="Loading bookings..." />;

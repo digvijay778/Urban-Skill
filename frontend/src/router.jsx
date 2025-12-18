@@ -28,13 +28,17 @@ import WorkerProfile from '@/pages/worker/Profile';
 import WorkerBookings from '@/pages/worker/Bookings';
 import WorkerBookingDetails from '@/pages/worker/BookingDetails';
 import Availability from '@/pages/worker/Availability';
+import WorkerReviews from '@/pages/worker/Reviews';
+import WorkerEarnings from '@/pages/worker/Earnings';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/Dashboard';
 import ManageUsers from '@/pages/admin/ManageUsers';
 import ManageWorkers from '@/pages/admin/ManageWorkers';
 import ManageWorkerVerifications from '@/pages/admin/ManageWorkerVerifications';
-
+import ManageBookings from '@/pages/admin/ManageBookings';
+import ManageCategories from '@/pages/admin/ManageCategories';
+import ManagePayments from '@/pages/admin/ManagePayments';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -130,6 +134,14 @@ export const router = createBrowserRouter([
         path: 'availability',
         element: <Availability />,
       },
+      {
+        path: 'reviews',
+        element: <WorkerReviews />,
+      },
+      {
+        path: 'earnings',
+        element: <WorkerEarnings />,
+      },
     ],
   },
   {
@@ -155,6 +167,18 @@ export const router = createBrowserRouter([
       {
         path: 'verifications',
         element: <ManageWorkerVerifications />,
+      },
+      {
+        path: 'bookings',
+        element: <ManageBookings />,
+      },
+      {
+        path: 'categories',
+        element: <ManageCategories />,
+      },
+      {
+        path: 'payments',
+        element: <ManagePayments />,
       },
     ],
   },

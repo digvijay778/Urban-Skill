@@ -6,6 +6,7 @@ import { formatDate } from '@/utils/formatDate';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { BOOKING_STATUS_COLORS } from '@/utils/constants';
 import Loader from '@components/common/Loader';
+import PaymentModal from '@components/booking/PaymentModal';
 import toast from 'react-hot-toast';
 
 const BookingDetails = () => {
@@ -19,6 +20,7 @@ const BookingDetails = () => {
   const [review, setReview] = useState({ rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
   const [existingReview, setExistingReview] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -75,6 +77,16 @@ const BookingDetails = () => {
       return;
     }
 
+    if (review.comment.trim().length < 10) {
+      toast.error('Review comment must be at least 10 characters long');
+      return;
+    }
+
+    if (review.comment.trim().length > 1000) {
+      toast.error('Review comment cannot exceed 1000 characters');
+      return;
+    }
+
     try {
       setSubmittingReview(true);
       const response = await api.post(`/reviews/${id}`, review);
@@ -84,7 +96,8 @@ const BookingDetails = () => {
       setReview({ rating: 5, comment: '' });
     } catch (error) {
       console.error('Failed to submit review:', error);
-      toast.error(error.response?.data?.message || 'Failed to submit review');
+      const errorMsg = error.response?.data?.errors?.[0]?.message || error.response?.data?.message || 'Failed to submit review';
+      toast.error(errorMsg);
     } finally {
       setSubmittingReview(false);
     }
@@ -251,9 +264,33 @@ const BookingDetails = () => {
         </div>
 
         {/* Actions */}
-        {(canCancel || canReview) && (
+        {(canCancel || canReview || (booking.status === 'ACCEPTED' && !booking.paymentId)) && (
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Actions</h2>
+            
+            {/* Payment Button - Show if booking is accepted and not paid */}
+            {booking.status === 'ACCEPTED' && !booking.paymentId && (
+              <>
+                <button
+                  onClick={() => setShowPaymentModal(true)}
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-lg font-bold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 mb-4"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  Pay Now - ₹{booking.totalAmount || booking.budget}
+                </button>
+                <div className="bg-blue-50 rounded-lg p-3 mb-4 flex items-start gap-2">
+                  <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-sm text-blue-700">
+                    Worker has accepted your booking! Complete the payment to confirm the booking and credit the amount to worker's wallet.
+                  </p>
+                </div>
+              </>
+            )}
+            
             {canCancel && (
               <>
                 <button
@@ -270,14 +307,32 @@ const BookingDetails = () => {
             )}
             {canReview && (
               <>
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex-shrink-0">
+                      <svg className="w-12 h-12 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-gray-900">Your review matters!</h3>
+                      <p className="text-sm text-gray-700">
+                        Help {workerName} grow their reputation and assist other customers in making informed decisions.
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 <button
                   onClick={() => setShowReviewModal(true)}
-                  className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-4 rounded-lg font-bold hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
-                  Leave a Review
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  Leave a Review Now
                 </button>
-                <p className="text-sm text-gray-500 mt-2 text-center">
-                  Share your experience with this worker
+                <p className="text-sm text-gray-500 mt-3 text-center font-medium">
+                  ⏱️ Takes less than 2 minutes • Help the community
                 </p>
               </>
             )}
@@ -312,9 +367,23 @@ const BookingDetails = () => {
 
       {/* Review Modal */}
       {showReviewModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Leave a Review</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl animate-fadeIn">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">Leave a Review</h3>
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-6">
+              How was your experience with {workerName}?
+            </p>
             
             {/* Rating */}
             <div className="mb-6">
@@ -345,15 +414,32 @@ const BookingDetails = () => {
 
             {/* Comment */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Review
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Your Review
+                </label>
+                <span className={`text-xs ${
+                  review.comment.length < 10 
+                    ? 'text-red-500' 
+                    : review.comment.length > 1000 
+                    ? 'text-red-500' 
+                    : 'text-gray-500'
+                }`}>
+                  {review.comment.length}/1000 characters {review.comment.length < 10 && '(min: 10)'}
+                </span>
+              </div>
               <textarea
                 value={review.comment}
                 onChange={(e) => setReview({ ...review, comment: e.target.value })}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Share your experience with this worker..."
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                  review.comment.length > 0 && review.comment.length < 10
+                    ? 'border-red-300'
+                    : review.comment.length > 1000
+                    ? 'border-red-300'
+                    : 'border-gray-300'
+                }`}
+                placeholder="Share your experience with this worker... (minimum 10 characters)"
               />
             </div>
 
@@ -376,6 +462,21 @@ const BookingDetails = () => {
           </div>
         </div>
       )}
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        booking={booking}
+        onPaymentSuccess={(payment) => {
+          // Refresh booking data after successful payment
+          setBooking({
+            ...booking,
+            paymentId: payment._id,
+          });
+          toast.success('Payment completed successfully!');
+        }}
+      />
     </div>
   );
 };

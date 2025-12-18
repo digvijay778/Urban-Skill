@@ -220,7 +220,7 @@ const BookingDetails = () => {
                     {updating ? 'Processing...' : 'Accept Booking'}
                   </button>
                   <button
-                    onClick={() => handleStatusUpdate('REJECTED')}
+                    onClick={() => handleStatusUpdate('CANCELLED')}
                     disabled={updating}
                     className="bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >

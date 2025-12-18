@@ -48,8 +48,8 @@ const Dashboard = () => {
           totalBookings: bookings.length,
           completedJobs,
           totalEarnings,
-          rating: profile.rating?.average || 0,
-          reviewCount: profile.rating?.count || 0,
+          rating: profile.averageRating || 0,
+          reviewCount: profile.totalReviews || 0,
         });
         
         setRecentBookings(bookings.slice(0, 5));

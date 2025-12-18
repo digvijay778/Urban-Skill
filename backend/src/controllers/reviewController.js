@@ -8,6 +8,10 @@ const createReview = asyncHandler(async (req, res) => {
   const customerId = req.user.userId;
   const reviewData = req.body;
 
+  console.log('Review submission data:', JSON.stringify(reviewData, null, 2));
+  console.log('Rating type:', typeof reviewData.rating);
+  console.log('Rating value:', reviewData.rating);
+
   const booking = await require('../models/Booking').findById(bookingId);
   if (!booking) {
     throw new Error('Booking not found');

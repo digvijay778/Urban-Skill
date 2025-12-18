@@ -8,7 +8,12 @@ const connectDatabase = async () => {
     logger.info('Attempting to connect to MongoDB...');
     logger.info(`Connection string: ${mongoUri.replace(/:[^:@]+@/, ':****@')}`);
     
-    await mongoose.connect(mongoUri);
+    // Add connection timeout and retry settings
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+      socketTimeoutMS: 45000, // 45 seconds
+      family: 4 // Use IPv4, skip trying IPv6
+    });
 
     logger.info('MongoDB connected successfully');
     logger.info(`Database: ${mongoose.connection.name}`);

@@ -3,9 +3,15 @@ import api from '@/services/api';
 
 export const fetchBookings = createAsyncThunk(
   'booking/fetchBookings',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await api.get('/bookings/my-bookings');
+      // Get user role from auth state
+      const { auth } = getState();
+      const userRole = auth.user?.role;
+      
+      // Add role query parameter for workers
+      const queryParam = userRole === 'WORKER' ? '?role=WORKER' : '';
+      const response = await api.get(`/bookings/my-bookings${queryParam}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch bookings');

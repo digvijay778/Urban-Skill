@@ -1,9 +1,11 @@
 const Payment = require('../models/Payment');
 const Booking = require('../models/Booking');
+const WorkerProfile = require('../models/WorkerProfile');
 const { razorpayInstance } = require('../config/razorpay');
 const ApiError = require('../utils/ApiError');
 const { PAYMENT_STATUS } = require('../constants/paymentStatus');
 const { RESPONSE_MESSAGES } = require('../constants/responseMessages');
+const crypto = require('crypto');
 
 const createOrder = async (bookingId, customerId, workerId, amount) => {
   try {
@@ -45,9 +47,22 @@ const verifyPayment = async (paymentData) => {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = paymentData;
 
     // Find payment record
-    const payment = await Payment.findOne({ razorpayOrderId });
+    const payment = await Payment.findOne({ razorpayOrderId }).populate('workerId');
     if (!payment) {
       throw new ApiError(404, RESPONSE_MESSAGES.PAYMENT_NOT_FOUND);
+    }
+
+    // Verify Razorpay signature
+    const body = razorpayOrderId + '|' + razorpayPaymentId;
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest('hex');
+
+    if (expectedSignature !== razorpaySignature) {
+      payment.status = PAYMENT_STATUS.FAILED;
+      await payment.save();
+      throw new ApiError(400, 'Invalid payment signature');
     }
 
     // Update payment with verification details
@@ -63,8 +78,25 @@ const verifyPayment = async (paymentData) => {
       paymentId: payment._id,
     });
 
+    // Credit worker wallet
+    const workerProfile = await WorkerProfile.findOne({ userId: payment.workerId });
+    if (workerProfile) {
+      workerProfile.wallet.balance += payment.amount;
+      workerProfile.wallet.transactions.push({
+        amount: payment.amount,
+        type: 'CREDIT',
+        description: `Payment received for booking ${payment.bookingId}`,
+        paymentId: payment._id,
+        bookingId: payment.bookingId,
+        date: new Date(),
+        status: 'COMPLETED',
+      });
+      await workerProfile.save();
+    }
+
     return payment;
   } catch (error) {
+    if (error instanceof ApiError) throw error;
     throw new ApiError(400, 'Payment verification failed');
   }
 };

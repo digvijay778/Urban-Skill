@@ -112,6 +112,44 @@ const workerProfileSchema = new mongoose.Schema(
     profilePicture: {
       type: String,
     },
+    wallet: {
+      balance: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      transactions: [
+        {
+          amount: {
+            type: Number,
+            required: true,
+          },
+          type: {
+            type: String,
+            enum: ['CREDIT', 'DEBIT', 'WITHDRAWAL'],
+            required: true,
+          },
+          description: String,
+          paymentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Payment',
+          },
+          bookingId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Booking',
+          },
+          date: {
+            type: Date,
+            default: Date.now,
+          },
+          status: {
+            type: String,
+            enum: ['PENDING', 'COMPLETED', 'FAILED'],
+            default: 'COMPLETED',
+          },
+        },
+      ],
+    },
   },
   { timestamps: true }
 );

@@ -6,20 +6,22 @@ const createReviewValidator = [
     .withMessage('Invalid booking ID'),
   body('rating')
     .isNumeric()
-    .withMessage('Rating must be a number')
-    .custom((value) => value >= 1 && value <= 5)
-    .withMessage('Rating must be between 1 and 5'),
+    .custom((value) => {
+      const num = Number(value);
+      return num >= 1 && num <= 5;
+    })
+    .withMessage('Rating must be a number between 1 and 5'),
   body('title')
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage('Review title is required')
     .isLength({ max: 100 })
     .withMessage('Title cannot exceed 100 characters'),
   body('comment')
-    .optional()
     .trim()
-    .isLength({ max: 1000 })
-    .withMessage('Comment cannot exceed 1000 characters'),
+    .notEmpty()
+    .withMessage('Review comment is required')
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('Comment must be between 10 and 1000 characters'),
   body('categories.professionalism')
     .optional()
     .isNumeric()

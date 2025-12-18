@@ -156,43 +156,85 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-purple-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
+            <span className="text-sm text-gray-500">Fast access to common tasks</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {/* Pending Verifications */}
             <Link
-              to="/admin/manage-users"
-              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-primary-500 hover:bg-purple-50 transition-all group"
+              to="/admin/verifications"
+              className="relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-orange-500 hover:bg-orange-50 transition-all group"
             >
-              <svg className="w-10 h-10 text-primary-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {stats.pendingVerifications > 0 && (
+                <span className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                  {stats.pendingVerifications}
+                </span>
+              )}
+              <svg className="w-10 h-10 text-orange-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-gray-700 font-semibold text-sm text-center">Verifications</span>
+            </Link>
+
+            {/* Manage Users */}
+            <Link
+              to="/admin/users"
+              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-blue-500 hover:bg-blue-50 transition-all group"
+            >
+              <svg className="w-10 h-10 text-blue-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              <span className="text-gray-700 font-semibold">Manage Users</span>
+              <span className="text-gray-700 font-semibold text-sm text-center">Users</span>
             </Link>
+
+            {/* Manage Workers */}
             <Link
-              to="/admin/manage-workers"
-              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-primary-500 hover:bg-purple-50 transition-all group"
+              to="/admin/workers"
+              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-purple-500 hover:bg-purple-50 transition-all group"
             >
-              <svg className="w-10 h-10 text-secondary-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-10 h-10 text-purple-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span className="text-gray-700 font-semibold">Verify Workers</span>
+              <span className="text-gray-700 font-semibold text-sm text-center">Workers</span>
             </Link>
+
+            {/* Bookings */}
             <Link
               to="/admin/bookings"
-              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-primary-500 hover:bg-purple-50 transition-all group"
+              className="relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-green-500 hover:bg-green-50 transition-all group"
             >
+              {stats.activeBookings > 0 && (
+                <span className="absolute -top-2 -right-2 w-7 h-7 bg-green-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {stats.activeBookings}
+                </span>
+              )}
               <svg className="w-10 h-10 text-green-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <span className="text-gray-700 font-semibold">View Bookings</span>
+              <span className="text-gray-700 font-semibold text-sm text-center">Bookings</span>
             </Link>
+
+            {/* Payments */}
             <Link
-              to="/admin/reports"
-              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-primary-500 hover:bg-purple-50 transition-all group"
+              to="/admin/payments"
+              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all group"
             >
-              <svg className="w-10 h-10 text-orange-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg className="w-10 h-10 text-emerald-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
-              <span className="text-gray-700 font-semibold">View Reports</span>
+              <span className="text-gray-700 font-semibold text-sm text-center">Payments</span>
+            </Link>
+
+            {/* Categories */}
+            <Link
+              to="/admin/categories"
+              className="flex flex-col items-center justify-center p-6 rounded-lg border-2 border-purple-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all group"
+            >
+              <svg className="w-10 h-10 text-indigo-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+              <span className="text-gray-700 font-semibold text-sm text-center">Categories</span>
             </Link>
           </div>
         </div>
