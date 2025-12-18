@@ -333,19 +333,7 @@ Urban-Skill/
 
 ---
 
-## 📸 Screenshots
 
-### Home Page
-*Browse skilled workers and discover services near you*
-
-### Worker Profile
-*Detailed profiles with ratings, reviews, and availability*
-
-### Booking Dashboard
-*Track all your bookings with real-time status updates*
-
-### Admin Panel
-*Comprehensive tools for platform management*
 
 ---
 
