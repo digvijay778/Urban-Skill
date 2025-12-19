@@ -18,7 +18,11 @@ const Profile = () => {
     skills: '',
     experience: '',
     hourlyRate: '',
-    location: '',
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: '',
     category: '',
   });
 
@@ -60,7 +64,11 @@ const Profile = () => {
         skills: profileData.skills?.join(', ') || '',
         experience: profileData.experience || '',
         hourlyRate: profileData.hourlyRate || '',
-        location: profileData.location || '',
+        street: profileData.location?.street || '',
+        city: profileData.location?.city || '',
+        state: profileData.location?.state || '',
+        zipCode: profileData.location?.zipCode || '',
+        country: profileData.location?.country || 'India',
         category: profileData.category?._id || '',
       });
 
@@ -115,7 +123,13 @@ const Profile = () => {
       data.append('skills', formData.skills);
       data.append('experience', formData.experience);
       data.append('hourlyRate', formData.hourlyRate);
-      data.append('location', formData.location);
+      data.append('location', JSON.stringify({
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        country: formData.country,
+      }));
       data.append('category', formData.category);
 
       if (files.profilePicture) data.append('profilePicture', files.profilePicture);
@@ -289,19 +303,86 @@ const Profile = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Location *
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                required
-                placeholder="City, State"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
+          </div>
+
+          {/* Address Section */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Location</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Street Address *
+                </label>
+                <input
+                  type="text"
+                  name="street"
+                  value={formData.street}
+                  onChange={handleChange}
+                  required
+                  placeholder="House No, Street Name"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  City *
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                  placeholder="City"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  State *
+                </label>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  required
+                  placeholder="State"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ZIP Code *
+                </label>
+                <input
+                  type="text"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                  required
+                  placeholder="123456"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Country *
+                </label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  required
+                  placeholder="India"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
             </div>
           </div>
 

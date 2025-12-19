@@ -39,6 +39,21 @@ const workerProfileSchema = new mongoose.Schema(
       },
     ],
     location: {
+      street: String,
+      city: String,
+      state: String,
+      zipCode: String,
+      country: String,
+      coordinates: {
+        type: {
+          type: String,
+          enum: ['Point'],
+        },
+        coordinates: [Number], // [longitude, latitude]
+      },
+    },
+    // Backward compatibility - will be deprecated
+    locationText: {
       type: String,
       trim: true,
     },

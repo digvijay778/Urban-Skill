@@ -55,12 +55,14 @@
 
 ### For Customers
 - 🔐 **Secure Authentication** - JWT-based authentication with refresh tokens
-- 👤 **Profile Management** - Update personal information and preferences
+- 👤 **Profile Management** - Update personal information with detailed address
+- 🤖 **AI Booking Assistant** - Smart AI-powered bot using Google Gemini for natural language booking
 - 🔎 **Worker Discovery** - Search and filter workers by category, location, and ratings
 - 📝 **Service Booking** - Create bookings with detailed requirements and schedules
 - 💳 **Payment Integration** - Secure online payments through Razorpay
 - 📊 **Booking Dashboard** - Track all bookings with real-time status updates
 - ⭐ **Review System** - Rate and review workers after service completion
+- 📍 **Location Services** - Precise address management with street, city, state, and ZIP code
 
 ### For Workers
 - 📋 **Professional Profiles** - Showcase skills, experience, and portfolio
@@ -70,12 +72,14 @@
 - 💰 **Earnings Tracking** - Monitor income and payment history
 - ⏰ **Availability Management** - Set working hours and availability
 - 📈 **Performance Analytics** - View ratings, reviews, and statistics
+- 📍 **Service Area** - Define service location with complete address details
 
 ### For Admins
 - 👥 **User Management** - Manage customer and worker accounts
-- ✅ **Worker Verification** - Approve or reject worker registrations
+- ✅ **Worker Verification** - Approve or reject worker registrations with document review
 - 📊 **Platform Analytics** - View platform statistics and insights
 - 🔍 **Content Moderation** - Monitor reviews and manage reports
+- 🤖 **AI Integration** - Google Gemini AI for intelligent booking assistance
 
 ---
 
@@ -89,6 +93,7 @@
 - **Tailwind CSS 3.3.6** - Utility-first CSS framework
 - **Axios 1.6.2** - HTTP client
 - **React Hot Toast** - Beautiful notifications
+- **AI Chat Interface** - Real-time AI booking assistant
 
 ### Backend
 - **Node.js** - JavaScript runtime
@@ -101,6 +106,7 @@
 - **Razorpay 2.8.4** - Payment gateway
 - **Multer** - File upload handling
 - **Winston** - Logging
+- **@google/genai** - Google Gemini AI integration for intelligent booking
 
 ### Tools & Services
 - **MongoDB Atlas** - Cloud database hosting
@@ -193,6 +199,9 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 # Razorpay Configuration
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+
+# Google Gemini AI
+GEMINI_API_KEY=your_google_gemini_api_key
 
 # Frontend URL
 FRONTEND_URL=http://localhost:3000
@@ -287,6 +296,12 @@ POST   /api/reviews                 - Create review
 GET    /api/reviews/worker/:id      - Get worker reviews
 PATCH  /api/reviews/:id             - Update review
 DELETE /api/reviews/:id             - Delete review
+```
+
+### AI Endpoints
+```
+POST   /api/ai/process-request      - Process natural language booking request with AI
+POST   /api/ai/create-booking       - Create booking from AI recommendation
 ```
 
 ### Admin Endpoints

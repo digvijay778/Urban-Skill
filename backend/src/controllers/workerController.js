@@ -93,6 +93,17 @@ const updateProfile = asyncHandler(async (req, res) => {
     updateData.skills = updateData.skills.split(',').map(s => s.trim());
   }
 
+  // Parse location JSON if it's a string
+  if (updateData.location && typeof updateData.location === 'string') {
+    try {
+      updateData.location = JSON.parse(updateData.location);
+    } catch (error) {
+      // If parsing fails, treat it as locationText for backward compatibility
+      updateData.locationText = updateData.location;
+      delete updateData.location;
+    }
+  }
+
   const profile = await workerService.updateWorkerProfile(
     userId,
     updateData

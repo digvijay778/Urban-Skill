@@ -15,8 +15,7 @@ import Services from '@/pages/Services';
 import Workers from '@/pages/Workers';
 import WorkerDetails from '@/pages/WorkerDetails';
 import NotFound from '@/pages/NotFound';
-import Unauthorized from '@/pages/Unauthorized';
-
+import Unauthorized from '@/pages/Unauthorized';import AIBookingAssistant from './pages/AIBookingAssistant';
 // Customer Pages
 import MyBookings from '@/pages/customer/MyBookings';
 import BookingDetails from '@/pages/customer/BookingDetails';
@@ -71,6 +70,14 @@ export const router = createBrowserRouter([
       {
         path: 'workers/:id',
         element: <WorkerDetails />,
+      },
+      {
+        path: 'ai-booking',
+        element: (
+          <ProtectedRoute allowedRoles={[USER_ROLES.CUSTOMER]}>
+            <AIBookingAssistant />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'my-bookings',
@@ -182,4 +189,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+], {
+  future: {
+    v7_startTransition: true,
+  },
+});

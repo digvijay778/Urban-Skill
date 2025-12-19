@@ -19,4 +19,8 @@ router.use('/reviews', reviewRoutes);
 router.use('/admin', adminRoutes);
 router.use('/categories', categoryRoutes);
 
+// AI routes
+const aiRoutes = require('./aiRoutes');
+router.use('/ai', aiRoutes);
+
 module.exports = router;

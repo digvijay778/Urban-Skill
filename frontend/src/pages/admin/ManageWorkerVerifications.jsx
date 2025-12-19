@@ -130,9 +130,12 @@ const ManageWorkerVerifications = () => {
                       </div>
                     )}
 
-                    {worker.location && (
+                    {(worker.location?.city || worker.locationText) && (
                       <p className="text-sm text-gray-600 mt-2">
-                        📍 {worker.location}
+                        📍 {worker.location?.city && worker.location?.state
+                          ? `${worker.location.city}, ${worker.location.state}`
+                          : worker.locationText || worker.location?.city || worker.location?.state || 'Location not specified'
+                        }
                       </p>
                     )}
                   </div>

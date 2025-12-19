@@ -33,6 +33,7 @@ const envConfig = {
   jwtExpiry: process.env.JWT_EXPIRY || '7d',
   razorpayKeyId: process.env.RAZORPAY_KEY_ID,
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET,
+  geminiApiKey: process.env.GEMINI_API_KEY,
   logLevel: process.env.LOG_LEVEL || 'info',
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
